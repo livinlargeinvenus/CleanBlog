@@ -167,3 +167,128 @@ app.get('/post', (req, res) => {
 ```
 
 ---
+
+- cleanblog-test-db adında bir veri tabanı için mongoose ile gerekli bağlantı bilgilerini yazalım.
+
+```bash
+npm i mongoose
+```
+
+```js
+/// App.js
+// ...
+const mongoose = require('mongoose');
+// ...
+// connect db
+mongoose.set('strictQuery', false);
+mongoose.connect('mongodb://127.0.0.1:27017/cleanblog-test-db', {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+});
+```
+
+- "Add New Post" sayfamızdan göndericeğimiz veriler req.body ile yakalayalım, gerekli middleware fonksiyonarını kullanalım.
+
+```js
+// MIDDLEWARES
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
+```
+
+```js
+app.post('/addpost', async (req, res) => {
+    console.log(req.body);
+    res.redirect('/');
+});
+```
+
+```html
+<!-- add_post.ejs -->
+<!-- ... -->
+<form method="POST" action="addpost" novalidate>
+<!-- ... -->
+<input type="text" name="title" class="form-control" placeholder="Name" id="name" required>
+<!-- ... -->
+<textarea rows="5" name="detail" class="form-control" placeholder="Message" id="message" required
+<!-- ... -->
+```
+
+- title:String, detail:String, dateCreated:Date(default now) özelliklerine sahip Post modelini oluşturalım.
+
+<p align="center"><img src="./image/models.jpg"/></p>
+
+```js
+/// Post.js
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
+// create schema
+const PostSchema = new Schema({
+    title: String,
+    detail: String,
+    date: { type: Date, default: Date.now },
+});
+
+// model
+const Post = mongoose.model('Post', PostSchema);
+
+module.exports = Post;
+```
+
+- Veri tabanımızda 3 adet pos dökümanı oluşturalım.
+
+```js
+/// App.js
+// ...
+const Post = require('./models/Post');
+// ...
+app.post('/addpost', async (req, res) => {
+    await Post.create(req.body);
+    res.redirect('/');
+});
+// ...
+```
+
+<p align="center"><img src="./image/cleanblog-test-db-3entry.jpg"/></p>
+
+- Oluşturduğumuz post dökümanlarını Blog sitemizin anasayfasında gösterelim.
+
+```js
+/// App.js
+// ...
+// ROUTES
+app.get('/', async (req, res) => {
+    const addpost = await Post.find({});
+    res.render('index', {
+        addpost,
+    });
+});
+// ...
+```
+
+```js
+/// index.ejs
+// ...
+<div class="post-preview">
+
+<% addpost.forEach( element=> { %>
+
+    <a href="./post">
+    <h2 class="post-title">
+        <%= element.title %>
+    </h2>
+    <h3 class="post-subtitle">
+        <%= element.detail %>
+    </h3>
+    </a>
+    <p class="post-meta">Posted by
+    <a href="https://github.com/livinlargeinvenus">livinlargeinvenus</a>
+    on <%= element.date.toString().split(" ").slice(1, 4).join(" ") %>
+    </p>
+
+<% }) %>
+
+</div>
+// ...
+```
+
+<p align="center"><img src="./image/cleanblog-website-1.jpg"/></p>
