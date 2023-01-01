@@ -13,7 +13,7 @@
           <div class="col-lg-8 col-md-10 mx-auto">
             <div class="site-heading">
               <h1>Clean Blog</h1>
-              <span class="subheading">A Blog Theme by Start Bootstrap</span>
+              <span class="subheading">Changed by livinlargeinvenus</span>
             </div>
           </div>
         </div>
@@ -28,16 +28,16 @@
 
             <% addpost.forEach( element=> { %>
 
-              <a href="./post">
+              <a href="/post/<%= element._id %>">
                 <h2 class="post-title">
                   <%= element.title %>
                 </h2>
                 <h3 class="post-subtitle">
-                  <%= element.detail %>
+                  <%= element.subtitle %>
                 </h3>
               </a>
               <p class="post-meta">Posted by
-                <a href="https://github.com/livinlargeinvenus">livinlargeinvenus</a>
+                <a href="/"><%= element.author %></a>
                 on <%= element.date.toString().split(" ").slice(1, 4).join(" ") %>
               </p>
               

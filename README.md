@@ -1,5 +1,7 @@
 # CleanBlog
 
+## Bölüm 1
+
 - CleanBlog proje klasörünü oluşturalım.
 
 ```bash
@@ -72,6 +74,8 @@ app.listen(PORT, () => {
 <https://www.toptal.com/developers/gitignore/api/node>
 
 ---
+
+## Bölüm 2
 
 - Public klasörü oluşturup statik dosyalarımızı içerisine yerleştirelim.
 
@@ -167,6 +171,8 @@ app.get('/post', (req, res) => {
 ```
 
 ---
+
+## Bölüm 3
 
 - cleanblog-test-db adında bir veri tabanı için mongoose ile gerekli bağlantı bilgilerini yazalım.
 
@@ -292,3 +298,70 @@ app.get('/', async (req, res) => {
 ```
 
 <p align="center"><img src="./image/cleanblog-website-1.jpg"/></p>
+
+---
+
+## Bölüm 4
+
+- index.ejs içerisinde **/posts/<%= posts[i]._id %> ile _id** bilgisini gönderelim.
+
+```js
+// index.ejs
+// ...
+<a href="/post/<%= element._id %>">
+// ...
+```
+
+- app.js içerisinde GET metoduyla "/posts/:id" ile gönderilen "_id" yi yakalayalım.
+
+```js
+// app.js
+// ...
+app.get('/post/:id', async (req, res) => {
+    console.log(req.params.id);
+});
+// ...
+```
+
+- tekil post bilgilerini post.ejs dosyasına gönderelim.
+
+```js
+// app.js
+// ...
+app.get('/post/:id', async (req, res) => {
+    const post = await Post.findById(req.params.id);
+    res.render('post', {
+        post,
+    });
+});
+// ...
+```
+
+- post.ejs içerisine post.title, post.detail ve post.dateCreated bilgilerini gönderelim. (her bir post için ayrı image kullanmayacağız)
+
+```js
+// post.ejs
+// ...
+<div class="post-heading">
+    <h1><%= post.title %></h1>
+    <h2 class="subheading"><%= post.subtitle %></h2>
+    <span class="meta">Posted by
+        <a href="/"><%= post.author %></a>
+        on <%= post.date.toString().split(" ").slice(1, 4).join(" ") %>
+    </span>
+</div>
+// ...
+<!-- Post Content -->
+<article>
+<div class="container">
+    <div class="row">
+    <div class="col-lg-8 col-md-10 mx-auto">
+        <%= post.detail %>
+    </div>
+    </div>
+</div>
+</article>
+// ...
+```
+
+---

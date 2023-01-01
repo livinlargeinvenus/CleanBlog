@@ -3,7 +3,9 @@ const Schema = mongoose.Schema;
 
 // create schema
 const PostSchema = new Schema({
+    author: String,
     title: String,
+    subtitle: String,
     detail: String,
     date: { type: Date, default: Date.now },
 });
