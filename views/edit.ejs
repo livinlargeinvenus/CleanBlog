@@ -1,0 +1,86 @@
+<%- include('./partials/_header.ejs') -%>
+
+<body>
+
+  <!-- Navigation -->
+  <%- include('./partials/_navigation.ejs') -%>
+
+  <!-- Page Header -->
+  <header class="masthead" style="background-image: url('img/contact-bg.jpg')">
+    <div class="overlay"></div>
+    <div class="container">
+      <div class="row">
+        <div class="col-lg-8 col-md-10 mx-auto">
+          <div class="page-heading">
+            <h1>Add New Post</h1>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <div class="container">
+    <div class="row">
+      <div class="col-lg-8 col-md-10 mx-auto">
+        <form method="POST" action="/post/<%= post._id %>?_method=PUT" " novalidate>
+          <!-- author -->
+          <div class="control-group">
+            <div class="form-group floating-label-form-group controls">
+              <label>Author</label>
+              <input type="text" value="<%= post.author %>" name="author" class="form-control" placeholder="Author" id="name" required
+                data-validation-required-message="Please enter your name.">
+              <p class="help-block text-danger"></p>
+            </div>
+          </div>
+          <!-- title -->
+          <div class="control-group">
+            <div class="form-group floating-label-form-group controls">
+              <label>Post Title</label>
+              <input type="text" name="title" class="form-control" placeholder="Title" value="<%= post.title %>" id="name" required
+                data-validation-required-message="Please enter your title.">
+              <p class="help-block text-danger"></p>
+            </div>
+          </div>
+          <!-- subtitle -->
+          <div class="control-group">
+            <div class="form-group floating-label-form-group controls">
+              <label>Sub Title</label>
+              <input type="text" name="subtitle" value="<%= post.subtitle %>" class="form-control" placeholder="Subtitle" id="name" required
+                data-validation-required-message="Please enter your title.">
+              <p class="help-block text-danger"></p>
+            </div>
+          </div>
+          <!-- content -->
+          <div class="control-group">
+            <div class="form-group floating-label-form-group controls">
+              <label>Post Detail</label>
+              <textarea rows="5" name="detail" class="form-control" placeholder="Content" id="message" required
+                data-validation-required-message="Please enter a content."><%= post.detail %></textarea>
+              <p class="help-block text-danger"></p>
+            </div>
+          </div>
+          <br>
+          <div id="success"></div>
+          <button type="submit" class="btn btn-primary" id="sendMessageButton">Update</button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <hr>
+
+  <!-- Footer -->
+  <%- include('./partials/_footer.ejs') -%>
+
+  <!-- Contact Form JavaScript -->
+  <script src="js/jqBootstrapValidation.js"></script>
+  <script src="js/contact_me.js"></script>
+
+  <!-- Custom scripts for this template -->
+  <script src="js/clean-blog.min.js"></script>
+
+</body>
+
+</html>

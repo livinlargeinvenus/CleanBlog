@@ -365,3 +365,216 @@ app.get('/post/:id', async (req, res) => {
 ```
 
 ---
+
+## Bölüm 5
+
+- post.ejs template içerisinde UPDATE ve DELETE butonu oluşturalım.
+
+```html
+<div class="container">
+    <div class="row">
+    <div class="col-10">
+        <div class="text-justify">
+        <%= post.detail %>
+        </div>
+    </div>
+    <div class="col-2">
+        <div class="text-center">
+        <button class="btn btn-primary mt-5 mb-3 btn-block" href="#"><span>Update</span></button>
+        <button class="btn btn-danger mb-3 btn-block" href="#"><span>Delete</span></button>
+        </div>
+    </div>
+    </div>
+</div>
+```
+
+- Herhangi bir post verisini güncellemek için gerekli çalışmaları yapalım.
+
+```bash
+npm install method-override
+```
+
+```js
+// app.js
+// ...
+const methodOverride = require('method-override');
+// ...
+```
+
+```js
+// app.js
+// ...
+// MIDDLEWARES
+app.use(
+    methodOverride('_method', {
+        methods: ['POST', 'GET'],
+    })
+);
+// ...
+
+```
+
+```js
+// app.js
+// ...
+app.get('/post/edit/:id', async (req, res) => {
+    const post = await Post.findOne({ _id: req.params.id });
+
+    res.render('edit', {
+        post,
+    });
+});
+
+app.put('/post/:id', async (req, res) => {
+    const post = await Post.findOne({ _id: req.params.id });
+
+    post.author = req.body.author;
+    post.title = req.body.title;
+    post.subtitle = req.body.subtitle;
+    post.detail = req.body.detail;
+    post.save();
+
+    res.redirect(`/post/${req.params.id}`);
+});
+
+// ...
+
+```
+
+```html
+<!-- ... -->
+<!-- edit.js -->
+<form method="POST" action="/post/<%= post._id %>?_method=PUT" " novalidate>
+<!-- ... -->
+<input type="text" value="<%= post.author %>" name="author" class="form-control" placeholder="Author" id="name" required
+data-validation-required-message="Please enter your name.">
+<!-- ... -->
+<input type="text" name="title" class="form-control" placeholder="Title" value="<%= post.title %>" id="name" required
+data-validation-required-message="Please enter your title.">
+<!-- ... -->
+<input type="text" name="subtitle" value="<%= post.subtitle %>" class="form-control" placeholder="Subtitle" id="name" required
+data-validation-required-message="Please enter your title.">
+<!-- ... -->
+<textarea rows="5" name="detail" class="form-control" placeholder="Content" id="message" required
+data-validation-required-message="Please enter a content."><%= post.detail %></textarea>
+<!-- ... -->
+```
+
+```html
+<!-- ... -->
+<!-- post.ejs -->
+<a href="/post/edit/<%= post._id %>" class="btn btn-primary mt-5 mb-3 btn-block"><span>Update</span></a>
+<!-- ... -->
+```
+
+- Herhangi bir post verisini silmek için gerekli çalışmaları yapalım.
+
+```js
+// app.js
+// ...
+app.delete('/post/:id', async (req, res) => {
+    const post = await Post.findOne({ _id: req.params.id });
+
+    await Post.findByIdAndRemove(req.params.id);
+
+    res.redirect('/');
+});
+// ...
+```
+
+```html
+<!-- post.ejs -->
+<!-- ... -->
+<a href="/post/<%= post._id %>?_method=DELETE" class="btn btn-danger mb-3 btn-block" onclick="return confirm('ARE YOU SURE?')"><span>Delete</span></a>
+<!-- ... -->
+```
+
+- Kodumuzu MVC yapısına göre tekrar düzenleyelim.
+
+<p align="center"><img src="./image/controllers.png"/></p>
+
+```js
+// app.js
+// ...
+const postControllers = require('./controllers/postControllers');
+const pageController = require('./controllers/pageController');
+// ...
+// ROUTES
+app.get('/', postControllers.getAllPosts);
+app.get('/post/:id', postControllers.getPost);
+app.post('/addpost', postControllers.createPost);
+app.put('/post/:id', postControllers.updatePost);
+app.delete('/post/:id', postControllers.deletePhoto);
+
+app.get('/add_post', pageController.getAddPage);
+app.get('/about', pageController.getAboutPage);
+app.get('/post/edit/:id', pageController.getEditPage);
+// ...
+```
+
+```js
+// pageController.js
+const Post = require('../models/Post');
+
+exports.getAddPage = (req, res) => {
+    res.render('add_post');
+};
+
+exports.getAboutPage = (req, res) => {
+    res.render('about');
+};
+
+exports.getEditPage = async (req, res) => {
+    const post = await Post.findOne({ _id: req.params.id });
+
+    res.render('edit', {
+        post,
+    });
+};
+```
+
+```js
+// postControllers.js
+const Post = require('../models/Post');
+
+exports.getAllPosts = async (req, res) => {
+    const addpost = await Post.find({}).sort('-date');
+    res.render('index', {
+        addpost,
+    });
+};
+
+exports.getPost = async (req, res) => {
+    const post = await Post.findById(req.params.id);
+    res.render('post', {
+        post,
+    });
+};
+
+exports.createPost = async (req, res) => {
+    await Post.create(req.body);
+    res.redirect('/');
+};
+
+exports.updatePost = async (req, res) => {
+    const post = await Post.findOne({ _id: req.params.id });
+
+    post.author = req.body.author;
+    post.title = req.body.title;
+    post.subtitle = req.body.subtitle;
+    post.detail = req.body.detail;
+    post.save();
+
+    res.redirect(`/post/${req.params.id}`);
+};
+
+exports.deletePhoto = async (req, res) => {
+    const post = await Post.findOne({ _id: req.params.id });
+
+    await Post.findByIdAndRemove(req.params.id);
+
+    res.redirect('/');
+};
+```
+
+---
