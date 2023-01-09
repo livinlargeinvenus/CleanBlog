@@ -12,10 +12,20 @@ const app = express();
 
 // connect db
 mongoose.set('strictQuery', false);
-mongoose.connect('mongodb://127.0.0.1:27017/cleanblog-test-db', {
-    useNewUrlParser: true,
-    useUnifiedTopology: true,
-});
+mongoose
+    .connect(
+        'mongodb+srv://livinlargeinvenus:eoPYf4hn3vVOPXHM@blogs.mqopdyf.mongodb.net/?retryWrites=true&w=majority',
+        {
+            useNewUrlParser: true,
+            useUnifiedTopology: true,
+        }
+    )
+    .then(() => {
+        console.log('DB CONNECTED!');
+    })
+    .catch((err) => {
+        console.log(err);
+    });
 
 // TEMPLATE ENGINE
 app.set('view engine', 'ejs');
@@ -41,9 +51,8 @@ app.get('/add_post', pageController.getAddPage);
 app.get('/about', pageController.getAboutPage);
 app.get('/post/edit/:id', pageController.getEditPage);
 
-
 // port
-const PORT = 3000;
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
     console.log(`Sunucu ${PORT} portunda baslatildi...`);
 });
