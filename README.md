@@ -578,3 +578,9 @@ exports.deletePhoto = async (req, res) => {
 ```
 
 ---
+
+## Bölüm 6
+
+- Uygulamamızı HEROKU ve MongoDB Atlas ücresiz servislerini kullanarak yükleyelim.
+
+![deploying](./image/deploy.png)
